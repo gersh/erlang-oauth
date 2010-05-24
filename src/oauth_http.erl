@@ -1,6 +1,6 @@
 -module(oauth_http).
 
--export([get/1, post/2, response_params/1, response_body/1, response_code/1]).
+-export([get/1, post/2,request/2, response_params/1, response_body/1, response_code/1]).
 
 
 get(URL) ->

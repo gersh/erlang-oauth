@@ -68,19 +68,26 @@ oauth_get(header, URL, Params, Consumer, Token, TokenSecret) ->
   Signed = oauth:signed_params("GET", URL, Params, Consumer, Token, TokenSecret),
   {AuthorizationParams, QueryParams} = lists:partition(fun({K, _}) -> lists:prefix("oauth_", K) end, Signed),
   Request = {oauth:uri(URL, QueryParams), [oauth:header(AuthorizationParams)]},
-  http:request(get, Request, [{autoredirect, false}], []);
+  oauth_http:request(get,Request);
 oauth_get(querystring, URL, Params, Consumer, Token, TokenSecret) ->
   oauth:get(URL, Params, Consumer, Token, TokenSecret).
+
+oauth_post(header, URL, Params, Consumer, Token, TokenSecret) ->
+  Signed = oauth:signed_params("POST", URL, Params, Consumer, Token, TokenSecret),
+  {AuthorizationParams, QueryParams} = lists:partition(fun({K, _}) -> lists:prefix("oauth_", K) end, Signed),
+  oauth_http:request(post,{URL,[oauth:header(AuthorizationParams)],"application/x-www-form-urlencoded",oauth_uri:params_to_string(QueryParams)}).
 
 %%============================================================================
 %% gen_server callbacks
 %%============================================================================
 
 init(Consumer) ->
+  ibrowse:start(),
+  ssl:start(),
   {ok, {Consumer}}.
 
 handle_call({get_request_token, URL, Params, ParamsMethod}, _From, State={Consumer}) ->
-  case oauth_get(ParamsMethod, URL, Params, Consumer, "", "") of
+  case oauth_post(ParamsMethod, URL, Params, Consumer, "", "") of
     {ok, Response} ->
       case oauth_http:response_code(Response) of
         200 ->
@@ -93,7 +100,7 @@ handle_call({get_request_token, URL, Params, ParamsMethod}, _From, State={Consum
       {reply, Error, State}
   end;
 handle_call({get_access_token, URL, Params, ParamsMethod}, _From, State={Consumer, RParams}) ->
-  case oauth_get(ParamsMethod, URL, Params, Consumer, oauth:token(RParams), oauth:token_secret(RParams)) of
+  case oauth_post(ParamsMethod, URL, Params, Consumer, oauth:token(RParams), oauth:token_secret(RParams)) of
     {ok, Response} ->
       case oauth_http:response_code(Response) of
         200 ->
