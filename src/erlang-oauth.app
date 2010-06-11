@@ -1,4 +1,4 @@
-{application, erlang-oauth, [
+{application, 'erlang-oauth', [
   {description, "Erlang OAuth implementation"},
   {vsn, "0.01"},
   {modules, [
