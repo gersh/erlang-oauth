@@ -1,6 +1,6 @@
 all:
 	@test -d ebin || mkdir ebin
-	@cp src/oauth.app ebin/
+	@cp src/erlang-oauth.app ebin/
 	@erl -make
 
 clean:
