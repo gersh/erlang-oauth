@@ -8,9 +8,10 @@
     oauth_plaintext,
     oauth_rsa_sha1,
     oauth_unix,
-    oauth_uri
+    oauth_uri,
+    oauth_client
   ]},
-  {registered, []},
+  {registered, [oauth_client]},
   {applications, [
     kernel,
     stdlib,
