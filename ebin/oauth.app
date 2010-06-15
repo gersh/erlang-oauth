@@ -11,7 +11,7 @@
     oauth_uri,
     oauth_client
   ]},
-  {registered, [oauth_client]},
+  {registered, [oauth,oauth_client]},
   {applications, [
     kernel,
     stdlib,
